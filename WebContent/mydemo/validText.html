@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+
+<script>
+	dojoConfig = {
+		parseOnLoad : true
+	}
+</script>
+<script src='../js/dojo/dojo.js'></script>
+<script>
+	require([ "dojo/parser", "dijit/Dialog", "dijit/form/Form",
+			"dijit/form/Button", "dijit/form/ValidationTextBox" ]);
+</script>
+</head>
+<body class="claro">
+	<div data-dojo-type="dijit/Dialog" data-dojo-id="myFormDialog"
+		title="Form Dialog" style="display: none">
+		<form data-dojo-type="dijit/form/Form" data-dojo-id="myForm">
+			<script type="dojo/on" data-dojo-event="submit" data-dojo-args="e">
+            e.preventDefault(); // prevent the default submit
+            if(!myForm.isValid()){ alert('Please fix fields'); return; }
+
+            window.alert("Would submit here via dojo/xhr");
+            // xhr.post( {
+            //      url: 'foo.com/handler',
+            //      content: { field: 'go here' },
+            //      handleAs: 'json'
+            //      load: function(data){ .. },
+            //      error: function(data){ .. }
+            //  });
+        </script>
+			<div class="dijitDialogPaneContentArea">
+				<label for='foo'>Foo:</label>
+				<div data-dojo-type="dijit/form/ValidationTextBox"
+					data-dojo-props="required:true"></div>
+			</div>
+			<div class="dijitDialogPaneActionBar">
+				<button data-dojo-type="dijit/form/Button" type="submit">OK</button>
+				<button data-dojo-type="dijit/form/Button" type="button"
+					data-dojo-props="onClick:function(){myFormDialog.hide();}">Cancel</button>
+			</div>
+		</form>
+	</div>
+
+	<p>When pressing this button the dialog will popup:</p>
+	<button id="buttonThree" data-dojo-type="dijit/form/Button"
+		type="button">
+		Show me!
+		<script type="dojo/method" data-dojo-event="onClick"
+			data-dojo-args="evt">
+        myFormDialog.show();
+    </script>
+	</button>
+</body>
+</html>

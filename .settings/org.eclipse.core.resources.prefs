@@ -1,0 +1,5 @@
+#Thu Apr 11 23:49:58 CST 2013
+eclipse.preferences.version=1
+encoding//WebContent/restful.jsp=UTF-8
+encoding//src/main/java/cn/javass/chapter6/web/controller/jsonparam/JsonParamController.java=UTF-8
+encoding//src/main/java/cn/javass/spring/mvc/method/annotation/RequestJsonParamMethodArgumentResolver.java=UTF-8

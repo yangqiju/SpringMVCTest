@@ -1,0 +1,120 @@
+<html>
+<head>
+<link rel="stylesheet" href="js/dijit/themes/tundra/tundra.css">
+	
+<style type="text/css">
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow:hidden;
+}
+
+#borderContainerTwo {
+    width: 100%;
+    height: 100%;
+}</style>
+
+<script>dojoConfig = {parseOnLoad: true}</script>
+<script src='js/dojo/dojo.js'></script>
+<script>
+	require(["dojo/parser", "dijit/layout/AccordionContainer", "dijit/layout/ContentPane","dijit/layout/BorderContainer","dijit/layout/AccordionPane","dijit/layout/TabContainer"]);
+</script>
+
+<script>
+require([
+    "dojo/ready", "dojo/_base/window", "dojo/store/Memory",
+    "dijit/tree/ObjectStoreModel", "dijit/Tree","dojox/layout/ContentPane"
+], function(ready, win, Memory, ObjectStoreModel, Tree, ContentPane){
+
+    // Create test store, adding the getChildren() method required by ObjectStoreModel
+    var myStore = new Memory({
+        data: [
+            { id: 'KQ', name:'考勤', type:'planet', population: '6 billion'},
+            { id: 'MKQ', name:'我的考勤', type:'continent', population:'900 million', area: '30,221,532 sq km',
+                    timezone: '-1 UTC to +4 UTC', parent: 'KQ'},
+                { id: 'EG', name:'刷卡记录', type:'country', parent: 'MKQ' },
+                { id: 'KE', name:'调休', type:'country', parent: 'MKQ' },
+				{ id: 'KE', name:'年假', type:'country', parent: 'MKQ' },
+                    { id: 'Nairobi', name:'Nairobi', type:'city', parent: 'KE' },
+                    { id: 'Mombasa', name:'Mombasa', type:'city', parent: 'KE' },
+            { id: 'AS', name:'考勤汇总', type:'continent', parent: 'KQ' },
+                { id: 'CN', name:'China', type:'country', parent: 'AS' },
+                { id: 'IN', name:'India', type:'country', parent: 'AS' },
+                { id: 'RU', name:'Russia', type:'country', parent: 'AS' },
+                { id: 'MN', name:'Mongolia', type:'country', parent: 'AS' },
+            { id: 'SJ', name:'数据导入', type:'continent', population:'21 million', parent: 'KQ'},
+            { id: 'EU', name:'请假管理', type:'continent', parent: 'KQ' },
+                { id: 'DE', name:'Germany', type:'country', parent: 'EU' },
+                { id: 'FR', name:'France', type:'country', parent: 'EU' },
+                { id: 'ES', name:'Spain', type:'country', parent: 'EU' },
+                { id: 'IT', name:'Italy', type:'country', parent: 'EU' },
+			{ id: 'RY', name:'人员管理', type:'continent', parent: 'KQ' },
+			{ id: 'BM', name:'部门管理', type:'continent', parent: 'KQ' },
+			{ id: 'JS', name:'角色管理', type:'continent', parent: 'KQ' },
+			{ id: 'SU', name:'注销', type:'continent', parent: 'KQ' }
+  
+        ],
+        getChildren: function(object){
+            return this.query({parent: object.id});
+        }
+    });
+
+    // Create the model
+    var myModel = new ObjectStoreModel({
+        store: myStore,
+        query: {id: 'KQ'}
+    });
+
+    // Create the Tree.   Note that all widget creation should be inside a dojo.ready().
+    ready(function(){
+        var tree = new Tree({
+            model: myModel,
+			onClick: function(item){
+				var mainShowContainer = dijit.byId("mainShowContainer");
+				  var cp2 = new ContentPane({
+					title: "Drinks",
+					content: "We are known for our drinks.",
+					href:'Create2.html',
+					closable:true,
+					onClose:function() {
+						return confirm("Are you sure you want to close me???");
+					}
+				  });
+				  mainShowContainer.addChild(cp2);
+				  mainShowContainer.startup();
+			},
+			openOnClick:true
+        });
+        tree.placeAt("treeManager");
+        tree.startup();
+    });
+});
+</script>
+<title>考勤管理平台</title>
+</head>
+
+<body class="tundra">
+	<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:true, liveSplitters:false" id="borderContainerTwo">
+		 <div data-dojo-type="dijit/layout/AccordionContainer" data-dojo-props="splitter:true, region:'leading'"style="width: 200px;" id="leftAccordion">
+				<div data-dojo-type="dijit/layout/AccordionPane" title="考勤管理" selected="true">
+					<div id='treeManager'></div>
+				</div>
+				<div data-dojo-type="dijit/layout/AccordionPane" title="EQ测试">
+					bianma
+				</div>
+				<div data-dojo-type="dijit/layout/AccordionPane" title="其他">
+					zenmehuishi
+				</div>
+			</div><!--end AccordionContainer-->
+		 <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center', tabStrip:true" id="mainShowContainer">
+			<div data-dojo-type="dijit/layout/ContentPane" title="欢迎页" data-dojo-props="selected:true, closable:true" id="Welcome">
+				欢迎光临
+			</div>
+		</div><!-- end TabContainer -->
+		 <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom', splitter:false" style="height: 50px">
+     fafafa
+    </div>
+	</div><!--end BorderContainer-->
+</body>
+</html>

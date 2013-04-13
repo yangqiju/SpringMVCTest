@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+	
+		<script>dojoConfig = {parseOnLoad: true,async:true}</script>
+		<script src='../js/dojo/dojo.js'></script>
+		<script>
+			require(["dojo/parser", "dijit/form/Form", "dijit/form/Button", "dijit/form/ValidationTextBox", "dijit/form/DateTextBox"]);</script>
+	</head>
+	<body class="claro">
+		 <div data-dojo-type="dijit/form/Form" id="myForm" data-dojo-id="myForm" encType="multipart/form-data" action="" method="">
+		    <table style="border: 1px solid #9f9f9f;" cellspacing="10">
+		    	 <tr>
+		            <td>
+		                <label for="empId">员工编号:</label>
+		            </td>
+		            <td>
+		                <input type="text" id="empId" name="empId" required="true" style="width:100px" data-dojo-type="dijit/form/ValidationTextBox"/>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td>
+		                <label for="empName">员工姓名:</label>
+		            </td>
+		            <td>
+		                <input type="text" id="empName" name="empName" required="true" style="width:100px" data-dojo-type="dijit/form/ValidationTextBox"/>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td>
+		                <label for="sex">员工性别:</label>
+		            </td>
+		            <td>
+		                 <input type="radio" data-dojo-type="dijit/form/RadioButton" name="sex" id="male" value="0"/>
+		                 	<label for="male">男</label>
+	                 	<input type="radio" data-dojo-type="dijit/form/RadioButton" name="sex" id="female" value="1"/>
+	                 		<label for="female">女</label>
+		            </td>
+		        </tr>
+		          <tr>
+		            <td>
+		                <label for="birthday">出生日期:</label>
+		            </td>
+		            <td>
+		                <input type="text" id="birthday" name="birthday" required="true" style="width:100px" data-dojo-type="dijit/form/DateTextBox"/>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td>
+		                <label for="enterDate">入职时间:</label>
+		            </td>
+		            <td>
+		                <input type="text" id="enterDate" name="enterDate" required="true" style="width:100px" data-dojo-type="dijit/form/DateTextBox"/>
+		            </td>
+		        </tr>
+		         <tr>
+		            <td>
+		                <label for="belongToDept">所属部门:</label>
+		            </td>
+		            <td>
+		               <select name="belongToDept" data-dojo-type="dijit/form/Select" style="width:100px">
+						    <option value="1">市场部</option>
+						    <option value="2" selected="selected">技术部</option>
+						    <option value="3">人事部</option>
+						    <option value="4">财务部</option>
+						</select>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td>
+		                <button data-dojo-type="dijit/form/Button" type="submit" name="submitButton" value="Submit">增加</button>
+		            </td>
+		            <td>
+		                <button data-dojo-type="dijit/form/Button" type="reset">重置</button>
+		            </td>
+		        </tr>
+		    </table>
+		</div>
+	</body>
+</html>

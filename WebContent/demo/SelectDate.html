@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Demo: Using _TemplatedMixin</title>
+		<link rel="stylesheet" href="js/dijit/themes/claro/claro.css" media="screen">
+		
+	</head>
+	<body class="claro">
+		<h1>Demo: Using _TemplatedMixin</h1>
+		<div id="SomeElement">
+		</div>
+		
+		<script>
+			// See the using Custom Modules with a CDN Tutorial for an explination of how
+			// on how 
+			var dojoConfig = {
+				async: true,
+				packages: [{
+					name: "demo",
+					location: location.pathname.replace(/\/[^/]+$/, "") + "/js/demo/"
+				}]
+			};
+		</script>
+		<!-- load dojo and provide config via data attribute -->
+	
+			<script src="js/dojo/dojo.js"></script>
+		<script>
+			require([
+				"dojo/parser",
+				"dijit/form/Button",
+				"demo/SelectDate",
+				"dojo/on"
+			], function(parser,button,SelectDate,on) {
+				// Invoke the dojo/parser
+				parser.parse();
+					var SelectDate = new SelectDate({
+						action:'helloworld',
+						method:'post'
+					});
+			});
+			
+		</script>
+	</body>
+</html>

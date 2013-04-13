@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html >
+<head>
+
+	<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+	<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css" />
+<link rel="stylesheet" href="../js/dojox/widget/Dialog/Dialog.css" />
+<script>dojoConfig = {parseOnLoad: true}</script><script src='../js/dojo/dojo.js'></script><script>dojo.require("dijit.form.Button");
+dojo.require("dojo.fx");
+dojo.require("dojox.widget.Dialog");
+function basicToggle1(){
+	 /* var toggler = new dojo.fx.Toggler({
+     node: "basicNode1",
+     showDuration: 3000,
+     hideDuration: 5000
+   });
+   dojo.connect(dijit.byId("showButton1"), "onClick", toggler, "show");
+   dojo.connect(dijit.byId("hideButton1"), "onClick", toggler, "hide"); */
+   var tst =  new dojox.widget.Dialog({title:"title",node:"basicNodel"});
+   tst.show();
+   //alert("123");
+}
+dojo.ready(basicToggle1);</script>
+</head>
+<body class="claro">
+    <button data-dojo-type="dijit.form.Button" id="hideButton1">Hide the node!</button>
+<button data-dojo-type="dijit.form.Button" id="showButton1">Show the node!</button>
+<div id="basicNode1" style="width: 200px; background-color: red;">
+  <b>This is a container of random content to toggle!</b>
+</div>
+</body>
+</html>

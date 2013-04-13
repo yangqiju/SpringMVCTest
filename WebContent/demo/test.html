@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Demo: dojox/grid/DataGrid Simple Structure</title>
+<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css"
+	media="screen">
+<link rel="stylesheet" href="../js/dojo/resources/dojo.css" />
+<link rel="stylesheet" href="../js/dojox/grid/resources/claroGrid.css" />
+<link rel="stylesheet" href="style.css" media="screen">
+<link rel="stylesheet" href="../../../resources/style/demo.css"
+	media="screen">
+</head>
+<body class="claro">
+	<h1>Demo: dojox/grid/DataGrid Simple Structure</h1>
+
+	<br />
+	<div id="grid"></div>
+	<div id="content"></div>
+
+	<script src="../js/dojo/dojo.js"></script>
+	<script>
+		var grid, dataStore, store;
+		require([ "dojox/grid/EnhancedGrid", "dojo/store/Memory",
+				"dojo/data/ObjectStore", "dojo/request","dojox/grid/cells/dijit",
+				"dojox/grid/_CheckBoxSelector","dojo/domReady!" ],
+				function(EnhancedGrid, Memory, ObjectStore, request) {
+					request.get("hof-batting.json", {
+						handleAs : "json"
+					}).then(function(data) {
+						store = new Memory({
+							data : data.items
+						});
+						dataStore = new ObjectStore({
+							objectStore : store
+						});
+						grid = new EnhancedGrid({
+							selectionMode: 'extended',
+							selectionMode: 'singer',
+							columnReordering : true,//此属性设置为true,可以拖拽标题栏，更换列顺序
+							loadingMessage : "请等待，数据正在加载中......",
+							errorMessage : "对不起，你的请求发生错误!",
+							store : dataStore,
+							selectable:true,
+							rowSelector: '20px',
+							keepSelection: true,
+							query : {
+								id : "*"
+							},
+							structure :
+								/* [[
+							 {
+								type:"dojox.grid._CheckBoxSelector",
+								width : 3
+							}], */
+							[
+							new dojox.grid.cells.RowIndex({
+								name : "编号",
+								width : "20px",
+								editable: true
+							}),//加入自编号
+							{
+								name: 'Column 2',
+								field: 'col2',
+								width: '20px', 
+								editable: true,
+								type: dojox.grid.cells.CheckBox,
+								styles: 'text-align: center;'
+								},
+								new dojox.grid.cells.CheckBox({
+									name : "编号",
+									width : "20px",
+									editable: true,
+									styles: 'text-align: center;'
+								}),
+							{
+								name : "First Name",
+								field : "first",
+								width : "84px",
+								editable: true
+							}, {
+								name : "Last Name",
+								field : "last",
+								width : "84px",
+								editable: true
+							}, {
+								name : "Bats",
+								field : "bats",
+								width : "70px",
+								editable: true
+							}, {
+								name : "Throws",
+								field : "throws",
+								width : "70px",
+								editable: true
+							}, {
+								name : "G",
+								field : "totalG",
+								width : "60px"
+							}, {
+								name : "AB",
+								field : "totalAB",
+								width : "60px"
+							}, {
+								name : "Games as Batter",
+								field : "totalGAB",
+								width : "120px"
+							}, {
+								name : "R",
+								field : "totalR",
+								width : "60px"
+							}, {
+								name : "RBI",
+								field : "totalRBI",
+								width : "60px"
+							}, {
+								name : "BB",
+								field : "totalBB",
+								width : "60px"
+							}, {
+								name : "K",
+								field : "totalK",
+								width : "60px"
+							}, {
+								name : "H",
+								field : "totalH",
+								width : "60px"
+							}, {
+								name : "2B",
+								field : "total2B",
+								width : "60px"
+							}, {
+								name : "3B",
+								field : "total3B",
+								width : "60px"
+							}, {
+								name : "HR",
+								field : "totalHR",
+								width : "60px"
+							} ]
+						}, "grid");
+						grid.on("RowClick", function(evt) {
+			                var idx = evt.rowIndex,
+			                    item = this.getItem(idx),
+			                    store = this.store;
+			                    content = dojo.byId("content");
+			                    content.innerHTML="you have clicked on rows " + store.getValue(item, "id");
+			　　　　　　　　　　}, true);
+						grid.startup();
+					});
+				});
+	</script>
+</body>
+</html>

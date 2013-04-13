@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+	
+		<script>dojoConfig = {parseOnLoad: true,async:true}</script>
+		<script src='../js/dojo/dojo.js'></script>
+		<script>
+			require(["dojo/parser", "dijit/form/Form", "dijit/form/Button", "dijit/form/ValidationTextBox", "dijit/form/DateTextBox"]);
+				
+		</script>
+	</head>
+	<body class="claro">
+		 <div data-dojo-type="dijit/form/Form" id="myForm" data-dojo-id="myForm" encType="multipart/form-data" action="" method="">
+		    <table style="border: 1px solid #9f9f9f;" cellspacing="10">
+		        <tr>
+		            <td>
+		                <label for="start">开始日期:</label>
+		            </td>
+		            <td>
+		                <input type="text" id="start" name="start" required="true" style="width:100px" data-dojo-type="dijit/form/DateTextBox"/>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td>
+		                <label for="end">终止日期:</label>
+		            </td>
+		            <td>
+		                <input type="text" id="end" name="end" required="true" style="width:100px" data-dojo-type="dijit/form/DateTextBox"/>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td>
+		                <button data-dojo-type="dijit/form/Button" type="submit" name="submitButton" value="Submit">查询</button>
+		            </td>
+		            <td>
+		                <button data-dojo-type="dijit/form/Button" type="reset">重置</button>
+		            </td>
+		        </tr>
+		    </table>
+		</div>
+	</body>
+</html>

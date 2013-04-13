@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html >
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="js/dijit/themes/claro/claro.css" />
+<style type="text/css">
+.justLabels-labelCell {
+  background-color: lightgrey;
+  padding-left: 5px;
+}
+#borderContainer {
+    width: 100%;
+    height: 100%;
+}
+</style>
+	<link rel="stylesheet" href="js/dojo/resources/dojo.css" />
+	<link rel="stylesheet" href="js/dojo/resources/dnd.css" />
+	<link rel="stylesheet" href="js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
+	<link rel="stylesheet" href="js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css" />
+	<link rel="stylesheet" href="demo.css"/>	
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="default.css" />
+	<title>考勤管理平台</title>
+<script src='js/dojo/dojo.js'></script>
+<script type="text/javascript">
+	require(["dojo/ready","dojox/widget/FisheyeList","dojo/parser","dojox/widget/FisheyeListItem","dojo/on","dojox/grid/EnhancedGrid","dojo/data/ItemFileWriteStore",
+	"dijit/Dialog","dojox/grid/_CheckBoxSelector","dojox/grid/cells","dojo/dnd/Manager","dojo/domReady!"],
+
+		function(ready, fishEyeList, parser, FishEyeListItem,on,EnhancedGrid,ItemFileWriteStore,Dialog,checkboxSelector,cells,manager){
+		dojo.addOnLoad(function(){
+			parser.parse();
+			dojo.subscribe("/dnd/start", function(source){
+				console.debug("Starting !!!");
+			});
+			dojo.subscribe("/dnd/drop/before", function(source, nodes, copy, target){
+			
+				/*
+				for (var i = 0, n = nodes.length; i < n; i++) { 
+												var node = nodes[i]; 
+												var item = source.getItem(node.id);
+												var allChild = target.getAllNodes();
+																				 console.debug(item);
+												 console.debug(target.getAllNodes().length);
+												 console.debug(target);
+												console.accept=1313131;
+												 console.debug(target.accept);
+												 item.dndType='21323';
+								console.debug("defore!!!");
+											} */
+				
+			target.clearItems()
+				
+			});
+			dojo.subscribe("/dnd/drop", function(source, nodes, copy, target){
+				console.debug(target.getAllNodes().length);
+				console.debug("drop!!!");
+				
+			});
+		});
+
+		ready(function(){
+				/*--------------------------------------------- 我的考勤 ------------------------------*/
+			on(dijit.byId("kaoqin"), "click", function(evt){
+				dijit.byId("kqDialog").show();
+				
+				var data = {
+					identifier: 'id',
+					items: []
+				 };
+				var data_list = [
+				  { col1: "normal", col2: false, col3: 'cl', col4: 29.91},
+				  { col1: "important", col2: false, col3: 'indicates', col4: 9.33},
+				  { col1: "important", col2: false, col3: 'selectively', col4: 19.34}
+				];
+				var rows = 60;
+				for(var i=0, l=data_list.length; i<rows; i++){
+				  data.items.push(dojo.mixin({ id: i+1 }, data_list[i%l]));
+				}
+				var store = new dojo.data.ItemFileWriteStore({data: data});
+
+				/*set up layout*/
+				var layout = [{
+					type:'dojox.grid._CheckBoxSelector'
+				},[
+				  {'name': '姓名', 'field': 'id', 'width':'50px'},
+				  {'name': '部门', 'field': 'col2', 'width':'30px',styles:'text-align:center;',type: cells.CheckBox},
+				  {'name': '日期', 'field': 'col3', 'width': '50px'},
+				  {'name': '上班时间', 'field': 'col4', 'width': '50px'},
+				  {'name': '下班时间', 'field': 'col4', 'width': '50px'},
+				  {'name': '迟到分钟', 'field': 'col4', 'width': '50px'},
+				  {'name': '早退分钟', 'field': 'col4', 'width': '50px'},
+				  {'name': '是否旷工', 'field': 'col4', 'width': '50px'},
+				  {'name': '加班小时', 'field': 'col4', 'width': '50px'},
+				  {'name': '是否审核通过', 'field': 'col4', 'width': '50px',editable:true,type:cells.CheckBox}
+				]];
+
+				/*create a new grid:*/
+				var grid = new dojox.grid.EnhancedGrid({
+					id: 'grid',
+					store: store,
+					autoWidth:true,
+					style:'height:400px;',
+					structure: layout,
+					loadingMessage:'please wait.....'},
+
+				  document.createElement('div'));
+
+				/*append the new grid to the div*/
+				dojo.byId("kqDialog").appendChild(grid.domNode);
+
+				/*Call startup() to render the grid*/
+				grid.startup();
+			});
+			/*--------------------------------------------- 请假管理------------------------------*/
+			on(dijit.byId("leave"), "click", function(evt){
+				dijit.byId("qjDialog").show();
+			});
+				/*--------------------------------------------- 审核确认------------------------------*/
+
+			on(dijit.byId("shenhequeren"), "click", function(evt){
+				dijit.byId("shDialog").show();
+				var data = {
+					identifier: 'id',
+					items: []
+				 };
+				var data_list = [
+				  { col1: "normal", col2:'技术部', col3: '2013-01-01', col4: 12,col5:'未审核'},
+				  { col1: "important", col2: '技术部', col3: '2013-02-04', col4: 1,col5:'未审核'},
+				  { col1: "important", col2: '技术部', col3: '2013-03-04', col4: 3,col5:'未审核'}
+				];
+				var rows = 10;
+				for(var i=0, l=data_list.length; i<rows; i++){
+				  data.items.push(dojo.mixin({ id: i+1 }, data_list[i%l]));
+				}
+				var store = new dojo.data.ItemFileWriteStore({data: data});
+
+				/*set up layout*/
+				var layout = [{
+					type:'dojox.grid._CheckBoxSelector'
+				},[
+				  {'name': '&nbsp;', 'field': 'id', 'width':'20px'},
+				  {'name': '姓名', 'field': 'col1', 'width':'50px'},
+				  {'name': '部门', 'field': 'col2', 'width':'50px',styles:'text-align:center;'},
+				  {'name': '日期', 'field': 'col3', 'width': '70px'},
+				  {'name': '加班小时', 'field': 'col4', 'width': '50px'},
+				  {'name': '审核状态', 'field': 'col5', 'width': '50px',editable:true,cellType:cells.Select,options:['未审核','已审核']}
+				]];
+
+				/*create a new grid:*/
+				var grid = new dojox.grid.DataGrid({
+					id: 'grid2',
+					store: store,
+					autoWidth:true,
+					style:'height:400px;',
+					structure: layout},
+				  document.createElement('div'));
+				  dojo.byId("shDialog").appendChild(grid.domNode)
+
+				/*Call startup() to render the grid*/
+				grid.startup();
+				
+			});
+			/*--------------------------------------------- 考勤汇总管理------------------------------*/
+			on(dijit.byId("dataInput"), "click", function(evt){
+				dijit.byId("kqhzDialog").show();
+				var data = {
+					identifier: 'id',
+					items: []
+				 };
+				var data_list = [
+				  { col1: "normal", col2:'技术部', col3: '0', col4: 12,col5:'1'},
+				  { col1: "important", col2: '技术部', col3: '0', col4: 1,col5:'1'},
+				  { col1: "important", col2: '技术部', col3: '0', col4: 3,col5:'1'}
+				];
+				var rows = 10;
+				for(var i=0, l=data_list.length; i<rows; i++){
+				  data.items.push(dojo.mixin({ id: i+1 }, data_list[i%l]));
+				}
+				var store = new dojo.data.ItemFileWriteStore({data: data});
+
+				/*set up layout*/
+				var layout = [{
+					type:'dojox.grid._CheckBoxSelector'
+				},[
+				  {'name': '&nbsp;', 'field': 'id', 'width':'20px'},
+				  {'name': '姓名', 'field': 'col1', 'width':'50px'},
+				  {'name': '部门', 'field': 'col2', 'width':'50px',styles:'text-align:center;'},
+				  {'name': '旷工天数', 'field': 'col4', 'width': '50px'},
+				  {'name': '请假天数', 'field': 'col5', 'width': '50px'},
+				  {'name': '实际上班天数', 'field': 'col5', 'width': '100px'}
+				]];
+
+				/*create a new grid:*/
+				var grid = new dojox.grid.DataGrid({
+					id: 'grid3',
+					store: store,
+					autoWidth:true,
+					style:'height:400px;',
+					structure: layout},
+				  document.createElement('div'));
+				  dojo.byId("hzInfo").appendChild(grid.domNode)
+
+				/*Call startup() to render the grid*/
+				grid.startup();
+
+			});
+		
+			/*--------------------------------------------- 权限角色管理------------------------------*/
+
+			on(dijit.byId("rolemanage"), "click", function(evt){
+				dijit.byId("rolemanageDialog").show();
+			});
+			/*--------------------------------------------- 部门人员管理------------------------------*/
+
+			on(dijit.byId("departStuffManage"), "click", function(evt){
+				dijit.byId("departmentManage").show();
+			});
+
+			/*------------------------------------------------查看所有打卡记录-------------------------*/
+			on(dijit.byId("selectAllRecord"), "click", function(evt){
+				dijit.byId("allRecordDialog").show();
+				var data = {
+					identifier: 'id',
+					items: []
+				 };
+				var data_list = [
+				  { col1: "normal", col2: false, col3: 'cl', col4: 29.91},
+				  { col1: "important", col2: false, col3: 'indicates', col4: 9.33},
+				  { col1: "important", col2: false, col3: 'selectively', col4: 19.34}
+				];
+				var rows = 30;
+				for(var i=0, l=data_list.length; i<rows; i++){
+				  data.items.push(dojo.mixin({ id: i+1 }, data_list[i%l]));
+				}
+				var store = new dojo.data.ItemFileWriteStore({data: data});
+
+				/*set up layout*/
+				var layout = [{
+					type:'dojox.grid._CheckBoxSelector'
+				},[
+				  {'name': '姓名', 'field': 'id', 'width':'50px'},
+				  {'name': '部门', 'field': 'col2', 'width':'30px',styles:'text-align:center;',type: cells.CheckBox},
+				  {'name': '日期', 'field': 'col3', 'width': '50px'},
+				  {'name': '上班时间', 'field': 'col4', 'width': '50px'},
+				  {'name': '下班时间', 'field': 'col4', 'width': '50px'},
+				  {'name': '迟到分钟', 'field': 'col4', 'width': '50px'},
+				  {'name': '早退分钟', 'field': 'col4', 'width': '50px'},
+				  {'name': '是否旷工', 'field': 'col4', 'width': '50px'},
+				  {'name': '加班小时', 'field': 'col4', 'width': '50px'},
+				  {'name': '是否审核通过', 'field': 'col4', 'width': '50px',editable:true,type:cells.CheckBox}
+				]];
+
+				/*create a new grid:*/
+				var grid = new dojox.grid.EnhancedGrid({
+					id: 'gridlost',
+					store: store,
+					autoWidth:true,
+					style:'height:400px;',
+					structure: layout,
+					loadingMessage:'please wait.....'},
+				  document.createElement('div'));
+
+				/*append the new grid to the div*/
+			dojo.byId("allRecordDialog").appendChild(grid.domNode);
+
+				/*Call startup() to render the grid*/
+				grid.startup();
+			});
+
+		});
+	});		
+</script>
+</head>
+<body class="claro">
+<div id="header">
+	<div class="header_left">当前登录：hello，年假：3天，加班：3小时</div>
+	<div class="header_center">
+		<div data-dojo-type="dojox/widget/FisheyeList"
+			itemWidth="50" itemHeight="50"
+			itemMaxWidth="100" itemMaxHeight="100"
+			orientation="horizontal"
+			effectUnits="2"
+			itemPadding="5"
+			attachEdge="top"
+			labelEdge="bottom"
+			id="fisheye1"
+		>
+			<div id="kaoqin" data-dojo-type="dojox/widget/FisheyeListItem" label="我的考勤" iconSrc="dockimages/myRecord.png"></div>
+			<div id="shenhequeren" data-dojo-type="dojox/widget/FisheyeListItem" label="审核管理" onclick="" iconSrc="dockimages/checkLeave.png"></div>
+			<div id="leave" data-dojo-type="dojox/widget/FisheyeListItem" label="请假管理" iconSrc="dockimages/leave.png"></div>
+			<div id="dataInput" data-dojo-type="dojox/widget/FisheyeListItem" label="考勤汇总" iconSrc="dockimages/sumRecord.png"></div>
+			<div id="rolemanage" data-dojo-type="dojox/widget/FisheyeListItem" label="权限角色管理" onclick="" iconSrc="dockimages/role.png"></div>
+			<div id="departStuffManage" data-dojo-type="dojox/widget/FisheyeListItem" label="部门人员管理" iconSrc="dockimages/department.png"></div>
+		</div>
+	</div>
+</div>
+</div>
+  <div id="kqDialog" title="考勤信息查询结果" data-dojo-type="dijit/Dialog">
+	  <div>起始日期：<input type="text" id="startTime" data-dojo-type="dijit/form/DateTextBox"/>终止日期：<input type="text" id="endTime" data-dojo-type="dijit/form/DateTextBox"/><button data-dojo-type="dijit/form/Button">查询</button>
+	  </div>
+
+<div id="qjDialog" title="请假管理" data-dojo-type="dijit/Dialog">
+<from>
+   <div data-dojo-type="dojox/layout/TableContainer" data-dojo-props="cols:1, customClass:'justLabels'" id="tc1">
+	  <div data-dojo-type="dijit/form/TextBox" title="姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:" value="zhangsan"></div>
+	  <div data-dojo-type="dijit/form/DateTextBox" required="true" title="起始时间："></div>
+	  <div data-dojo-type="dijit/form/DateTextBox" required="true" title="结束时间："></div>
+		  <select name="select1" data-dojo-type="dijit/form/Select" title="请假类型：">
+			<option value="TN">调休</option>
+			<option value="VA" selected="selected">事假</option>
+			<option value="WA">产假</option>
+			<option value="FL">丧假</option>
+			<option value="CA">其他</option>
+		  </select>
+	  <div data-dojo-type="dijit/form/Button" type="submit">申请提交</div>
+	</div>
+	</form>
+  </div>
+
+   <div id="shDialog" title="审核管理" data-dojo-type="dijit/Dialog"></div>
+   <div id="kqhzDialog" title="考勤汇总" data-dojo-type="dijit/Dialog">
+		   <form>
+		   <div id="kq">
+			  <input name="uploadedfile" multiple="true" type="file" data-dojo-type="dojox/form/Uploader" label="请选择打卡文件" id="uploader" />|
+			  <input type="submit" data-dojo-type="dijit/form/Button" name="submit" label="提交打卡记录文件"/>|
+			  <input type="button" data-dojo-type="dijit/form/Button" name="selectRecord" id="selectAllRecord" label="查看打卡记录"/>|
+			  <input type="button" data-dojo-type="dijit/form/Button" name="downloadRecord" id="downloadRecord" label="下载汇总信息" />
+			 </div>
+			</form>
+			<div id="hzInfo"></div>
+   </div>
+   <div id="rolemanageDialog" title="权限角色管理" data-dojo-type="dijit/Dialog" style="width:500px;">
+  	<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:true, liveSplitters:false" style="width: 800px; height: 300px;border: 1px solid #66FF33">
+		 <div data-dojo-type="dijit/layout/AccordionContainer" data-dojo-props="splitter:true, region:'leading'"style="width: 150px;">
+		 	<div data-dojo-type="dijit/layout/AccordionPane" title="所有员工" selected="true">
+				<div style="float: left; margin: 5px;">
+			<div dojoType="dojo.dnd.Source" jsId="c2" class="container" copyOnly="true">
+				<div class="dojoDndItem">Item <strong>X</strong></div>
+				<div class="dojoDndItem">Item <strong>Y</strong></div>
+				<div class="dojoDndItem">Item <strong>Z</strong></div>
+			</div>
+		</div>
+			</div>
+		 </div>
+		 <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center', tabStrip:true" id="tabContainer">
+			<div data-dojo-type="dijit/layout/ContentPane" title="超级管理员" data-dojo-props="selected:true, closable:false" id="superAdmin">
+				<div style="float: left; margin: 5px;">
+			<div data-dojo-type="dojo/dnd/Source" jsId="c3" class="container" data-dojo-props="allowNested:true,selfAccept:false">
+				<script type="dojo/method" event="creator" args="item, hint">
+					// this is custom creator, which changes the avatar representation
+					var node = dojo.doc.createElement("div"), s = String(item);
+					node.id = dojo.dnd.getUniqueId();
+					node.className = "dojoDndItem";
+					node.innerHTML = (hint != "avatar" || s.indexOf("Item") < 0) ?
+						s : "<strong style='color: darkred'>Special</strong> " + s;
+					return {node: node, data: item, type: ["text"]};
+				</script>
+				<div class="dojoDndItem">Item <strong>Alpha</strong></div>
+				<div class="nested">
+					<div class="dojoDndItem">Item <strong>Beta</strong></div>
+					<div class="dojoDndItem">Item <strong>Gamma</strong></div>
+					<div class="dojoDndItem">Item <strong>Delta</strong></div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="管理员" data-dojo-props="closable:false" id="admin">
+				<ul data-dojo-type="dojo/dnd/Target" jsId="admin"">
+					<li class="dojoDndItem">Item 2</li>
+					<li class="dojoDndItem">Item 3</li>
+					</ul>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="部门经理" data-dojo-props="closable:false" id="manager">
+				<ul data-dojo-type="dojo/dnd/Target" jsId="manager">
+				<li class="dojoDndItem">Item 4</li>
+					</ul>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="组长" data-dojo-props="closable:false" id="headman">
+				<ul data-dojo-type="dojo/dnd/Target" jsId="headman">
+						<li class="dojoDndItem">Item 5</li>
+					</ul>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="其他" data-dojo-props="closable:false" id="other">
+				<ul data-dojo-type="dojo/dnd/Target" jsId="headman">
+						<li class="dojoDndItem">Item 6</li>
+					</ul>
+			</div>
+		</div>
+		 <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom', splitter:false">
+			<button data-dojo-type="dijit/form/Button" type="submit">确认修改</button>
+		</div>
+   </div>
+   <div id="departmentManage" title="部门人员管理" data-dojo-type="dijit/Dialog">
+   	<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:true, liveSplitters:false" style="width:600px; height: 500px;border: 1px solid #66FF33">
+		 <div data-dojo-type="dijit/layout/AccordionContainer" data-dojo-props="splitter:true, region:'leading'"style="width: 150px;" id="leftAccordion">
+		 	<div data-dojo-type="dijit/layout/AccordionPane" title="所有员工" selected="true">
+				<div id='allStuff'>
+					<ul data-dojo-type="dojo/dnd/Source" data-dojo-type="accept: [ 'inStock', 'outOfStock' ]">
+					<li class="dojoDndItem" dndType="person">Item 1</li>
+					<li class="dojoDndItem" dndType="person">Item 2</li>
+					<li class="dojoDndItem">Item 3</li>
+					<li class="dojoDndItem">Item 4</li>
+					<li class="dojoDndItem">Item 5</li>
+					</ul>
+				</div>
+			</div>
+		 </div>
+		 <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center', tabStrip:true" id="mainShowContainer">
+			<div data-dojo-type="dijit/layout/ContentPane" title="技术部" data-dojo-props="selected:true, closable:false" id="technique">
+				<ul data-dojo-type="dojo/dnd/Source">
+					<li class="dojoDndItem">g1</li>
+					<li class="dojoDndItem">g2</li>
+					</ul>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="人事部" data-dojo-props="closable:false" id="personal">
+				<ul data-dojo-type="dojo/dnd/Source">
+					<li class="dojoDndItem">P1</li>
+					<li class="dojoDndItem">p2</li>
+					</ul>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="市场部" data-dojo-props="closable:false" id="market">
+				<ul data-dojo-type="dojo/dnd/Source">
+					<li class="dojoDndItem">s1</li>
+					<li class="dojoDndItem">s2</li>
+					<li class="dojoDndItem">s3</li>
+					</ul>
+			</div>
+		</div><!-- end TabContainer -->
+		 <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom', splitter:false">
+			<button data-dojo-type="dijit/form/Button" type="submit">确认修改</button><button data-dojo-type="dijit/form/Button" id="addStuff">添加新员工</button>
+		</div>
+</div>
+   
+   </div>
+   <div id="allRecordDialog" data-dojo-type="dijit/Dialog" title="所有人员打卡记录"></div>
+</body>
+</html>

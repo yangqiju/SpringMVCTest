@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+
+<script>
+	dojoConfig = {
+		async : true,
+		packages:[{
+			name:"mydemo",
+			location: location.pathname.replace(/\/[^/]+$/, "")+""
+		}]
+	};
+</script>
+<script src='../js/dojo/dojo.js'></script>
+<script>
+/* require(["mydemo/Person"], function(Person){
+	  var anon  = new Person(),
+	      alice = new Person({ name: "Alice", age: 42, residence: "Universe 1" });
+		alert(alice.name);
+	  console.log(anon.name, alice.name); // "Anonymous", "Alice"
+	  console.log(anon.residence, alice.residence); // "Universe A", "Universe 1"
+	  alice.moveTo("Universe 420");
+	  console.log(alice.residence); // "Universe 420"
+	}); */
+	require(["dojo/ready", "dojo/_base/window", "dojo/store/Memory",
+				"dijit/tree/ObjectStoreModel", "dijit/Tree","mydemo/MyTree" ], function(ready, win,
+				Memory, ObjectStoreModel, Tree,MyTree) {
+
+			ready(function() {
+				var myTree = new MyTree();
+				//myTree.placeAt("tree");
+				myTree.startup();
+			});
+		});
+	
+</script>
+</head>
+<body class="claro">
+	<div id="tree"></div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Demo: Using _TemplatedMixin</title>
+		<link rel="stylesheet" href="js/dijit/themes/claro/claro.css" media="screen">
+			<link href="js/dijit/themes/dijit.css" rel="stylesheet" />
+		<link href="js/dijit/themes/claro/Common.css" rel="stylesheet" />
+		<link href="js/dijit/themes/claro/form/Common.css" rel="stylesheet" />
+		<link href="js/dijit/themes/claro/form/Button.css" rel="stylesheet" />
+
+		<link href="js/dojox/form/resources/UploaderFileList.css" rel="stylesheet" />
+		<style type="text/css">
+		html, body{
+			font-family:sans-serif;
+		}
+		.browseButton{
+			width:300px;
+			/*height:20px;*/
+			font-weight:bold;
+			margin:10px 0 2px 0;
+		}
+		.dijitTabPane{
+			padding:20px;
+		}
+		fieldset{
+			text-align:right;
+			padding: 5px;
+		}
+		input[type=text]{
+			width:135px;
+		}
+		.dijitButton{
+			margin-top:15px;
+		}
+		.dojoxUploaderFileList{
+			text-align:left;
+			margin-top:10px;
+		}
+		.pageTable{
+			width:100%;
+		}
+		.pageTable td{
+			vertical-align:top;
+		}
+		#colForm{
+			width:330px;
+		}
+		#colImages{
+			padding-top:7px;
+		}
+		.thumb{
+			border:1px solid #ccc;
+			padding:5px;
+			width:123px;
+			background:#eee;
+			float:left;
+			margin:0 5px 5px 0;
+		}
+		.thumbbk{
+			background:#fff;
+			display:block;
+		}
+		.thumb img{
+			border:1px solid #ccc;
+			width:120px;
+		}
+		.form, .html5, .iframe, .flash{
+			display:none;
+		}
+		.Form .form, .HTML5 .html5, .IFrame .iframe, .Flash .flash{
+			display:block;
+		}
+		#dialog p{
+			width:310px;
+		}
+		form{
+			margin-bottom:15px;
+		}
+		code{
+			font-family:monospace;
+			white-space:nowrap;
+		}
+		.browseButton, .browseButton .dijitButton, .browseButton .dijitButtonNode {
+			display:block;
+		}
+		.dijitUploadDisplayInput {
+			width:100px;
+		}
+		</style>
+	</head>
+	<body class="claro">
+		<h1>Demo: Using _TemplatedMixin</h1>
+		<div id="SomeElement">
+		</div>
+		<script>
+			// See the using Custom Modules with a CDN Tutorial for an explination of how
+			// on how 
+			var dojoConfig = {
+				async: true,
+				packages: [{
+					name: "demo",
+					location: location.pathname.replace(/\/[^/]+$/, "") + "/js/demo/"
+				}]
+			};
+		</script>
+		<!-- load dojo and provide config via data attribute -->
+	
+			<script src="js/dojo/dojo.js"></script>
+		<script>
+			require([
+				"dojo/parser",
+				"demo/uploadFile"
+			], function(parser,uploadFile) {
+				
+				var uploadFile = new uploadFile({
+					id:'myform',
+					action:'#',
+					method:'post',
+					enctype:'multipart/form-data'
+				});
+				uploadFile.startup();
+				uploadFile.placeAt('SomeElement');
+				parser.parse();
+			});
+		</script>
+	</body>
+</html>

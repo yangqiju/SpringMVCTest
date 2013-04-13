@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+
+<script>
+	dojoConfig = {
+		async:true,
+		packages:[{
+			name:"demo",
+			location:location.pathname.replace(/\/[^/]+$/, '') + '/js'
+		}]
+	}
+</script>
+<script src='../js/dojo/dojo.js'></script>
+<script>
+	require([ "dojo/ready","demo/DateBox","dijit/form/DateTextBox","demo/Person"], function(ready, 
+			TestOracle,DateTextBox,TestDate) {
+		 /* new DateTextBox({
+		value : "31-DEC-2009",
+		name : "oracle"
+	}, "oracle");  */
+			 var p = new TestOracle({
+					value : "31-DEC-2009",
+					name : "oracle"
+				},"oracle"); 
+	});
+</script>
+</head>
+<body class="claro">
+	<label for="fromServerValue">Oracle date coming from server:</label>
+	<input id="fromServerValue" readonly="readonly" disabled="disabled"
+		value="31-DEC-2009" />
+	<br />
+	<label for="oracle">Client date:</label>
+	<input id="oracle" />
+	<br />
+	<label for="toServerValue">Oracle date going back to server:</label>
+	<input id="toServerValue" readonly="readonly" disabled="disabled" />
+</body>
+</html>

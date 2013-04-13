@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>操作员</title>
+
+</head>
+<script type="text/javascript" src="../../js/header.js"> </script>
+<script src="../js/dojo/dojo.js"
+	data-dojo-config="parseOnLoad: true">
+</script>
+<script type="text/javascript">
+	dojo.require("dojo.parser");
+	dojo.require("dojo/store/Memory");
+	dojo.require("dojo.data.ItemFileWriteStore");
+	dojo.require("dojox.grid.DataGrid");
+	dojo.require("dijit/Dialog");
+	dojo.require("dijit/form/Button");
+	dojo.require("dijit/form/TextBox");
+	dojo.require("dijit/form/DateTextBox");
+	dojo.require("dijit/form/TimeTextBox");
+	dojo.require("dijit.form.NumberTextBox");
+	dojo.require("dijit/form/FilteringSelect");
+	dojo.require("dijit/form/ValidationTextBox");
+	dojo.require("dojox.widget.Standby");
+	
+	require(["dojo/ready", "dojo/_base/declare", "dijit/form/DateTextBox", "dojo/date/locale", "dojo/dom"], function(ready, declare, DateTextBox, locale, dom){
+	    ready(function(){
+	        declare("OracleDateTextBox", DateTextBox, {
+	            oracleFormat: {selector: 'date', datePattern: 'dd-MMM-yyyy', locale: 'en-us'},
+	            value: "", // prevent parser from trying to convert to Date object
+	            postMixInProperties: function(){ // change value string to Date object
+	                this.inherited(arguments);
+	                // convert value to Date object
+	                this.value = locale.parse(this.value, this.oracleFormat);
+	            },
+	            // To write back to the server in Oracle format, override the serialize method:
+	            serialize: function(dateObject, options){
+	                return locale.format(dateObject, this.oracleFormat).toUpperCase();
+	            }
+	        });
+	        
+
+	    });
+	});
+
+</script>
+
+
+<body class="claro M_Right"
+	style="background: none; padding-top: 0px; margin-top: 0px">
+	<div class="S_Nva f_s_12">
+		<a href="../ext/welcome.html">首页</a> >> <a href="">管理员</a> >> <span>操作员</span>
+	</div>
+	<div class="S_Other f_s_12" style="height: 109px">
+	<form id="searchform">
+		<div class="S_OtherTop">
+			<input
+				type="button" id="newBtn" class="btnNew btnZoom" />
+		</div>
+
+
+	<div class="S_OtherBottom" style="height: 66px">
+
+		<table  style="margin-left: 8px">
+			<tr align="right">	
+			<td>最后一次登陆时间:</td> 
+					<td><input name="s_lastdate" id="s_lastdate" type="text"
+					class="txt2" /></td>	
+			<td>创建时间:</td> 
+					<td><input name="s_createdate" id="s_createdate" type="text"
+					class="txt2" /></td>	
+			<td>状态:</td> 
+					<td><input name="s_status" id="s_status" type="text"
+					class="txt2" /></td>	
+					</tr><tr>
+			<td>真实用户名:</td> 
+					<td><input name="s_realname" id="s_realname" type="text"
+					class="txt2" /></td>	
+			<td>密码:</td> 
+					<td><input name="s_password" id="s_password" type="text"
+					class="txt2" /></td>	
+			<td>登录用户名:</td> 
+					<td><input name="s_username" id="s_username" type="text"
+					class="txt2" /></td>	
+		</tr></table>
+			 <input type="button" id="searchbtn"
+				class="Btn btnZoom" style="background: url(../../images/b_30.jpg)" />
+				<input
+				type="button" id="exportBtn" class="btnExport btnZoom" />
+		</div>
+		</form>
+	</div>
+	<div id="basic4">
+		<div id="gridDiv" class="claro" ></div>
+	</div>
+	<div data-dojo-id="basicStandby" data-dojo-type="dojox.widget.Standby"
+		data-dojo-props="target:'basic4', color:'lightgray', image:'../../images/loading.gif'"></div>
+	<div class="Page f_s_12">
+		<form style="margin-left:30px;">
+		每页显示<select style="width:50px" id="pagecount" data-dojo-type="dijit/form/FilteringSelect" onchange="changepagesize()" >
+			<option>10</option>
+			<option>15</option>
+			<option selected>20</option>
+			<option>30</option>
+		</select>条记录
+		<ul id="pageCtrl">
+		</ul>
+		</form>
+	</div>
+	<div style="clear: both;"></div>
+	<div class="dell f_s_12">
+		<div class="S_OtherTop">
+			<input type="checkbox" id="selectAll" name="checkbox2"
+				value="checkbox" /> 全选 <input type="button" class="Btn btnZoom"
+				id="deleteSelected"
+				style="background: url(../../images/b_29dell.jpg)" />
+		</div>
+	</div>
+
+	<div class="WinCon" data-dojo-type="dijit/Dialog"
+		data-dojo-id="myFormDialog" title="修改">
+		<div class="dijitDialogPaneContentArea">
+			<form id="submitform">
+				<table id="tbcon" border="0" cellpadding="0" cellspacing="0">
+			 <tr>
+   			   <td class="td1">最后一次登陆时间</td>
+			   <td class="td2">
+					<input name="lastdate" id="lastdate" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">创建时间</td>
+				<td class="td4">					<input name="createdate" id="createdate" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">状态</td>
+			   <td class="td2">
+					<input name="status" id="status" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">真实用户名</td>
+				<td class="td4">					<input name="realname" id="realname" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+			 <tr>
+   			   <td class="td1">密码</td>
+			   <td class="td2">
+					<input name="password" id="password" type="text"
+					class="txt" />	
+					</td>
+   			    <td class="td3">登录用户名</td>
+				<td class="td4">					<input name="username" id="username" type="text"
+					class="txt" />	
+				</td>
+				</tr>
+					<!-- <tr>
+					<td class="td1">上传文件</td>
+					<td colspan="3" class="td2"><input type="text" class="txt2" />
+						<input type="button" class="Btn2" value="上传" /></td>
+				</tr> -->
+
+				</table>
+			</form>
+			<div style="width: 100%; height: 38px">
+				<table
+					style="height: 38px; width: 300px; position: relative; margin-left: 100px">
+					<tr>
+						<td><input name="button" type="button" id="btnWinOK"
+							class="WinConok btnZoom" /></td>
+						<td><input name="button" type="button"
+							class="WinConCancel btnZoom" onClick="myFormDialog.hide()" /></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="DivShow" id="tablehover" style="display: none;">
+		<table border="0" cellpadding="1" cellspacing="1">
+			<tr>
+				<td class="ttd2" colspan="2">详细信息</td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>最后一次登陆时间</td>
+				<td class="ttd2" id="tt_lastdate"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>创建时间</td>
+				<td class="ttd2" id="tt_createdate"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>状态</td>
+				<td class="ttd2" id="tt_status"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>真实用户名</td>
+				<td class="ttd2" id="tt_realname"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>密码</td>
+				<td class="ttd2" id="tt_password"></td>
+			</tr>
+			<tr>
+				<td class="ttd1" 
+				>登录用户名</td>
+				<td class="ttd2" id="tt_username"></td>
+			</tr>
+		</table>
+	</div>
+
+
+	<div class="DivShow" id="detailhover" style="display: none;">
+		<table border="0" cellpadding="1" cellspacing="1">
+			<tr>
+				<td class="ttd2"><div align="center">
+						<strong id="detailhovertxt"></strong>
+					</div></td>
+			</tr>
+		</table>
+	</div>
+	
+</body>
+
+<script type="text/javascript">
+	//set up layout
+	function doSearch(grid) {
+		console.log("doSearch:" + grid);
+	}
+	var changepagesize;
+	
+	require([ "nights/tbgrid","nights/params","dojo/domReady!"], function(tbgrid,params) {
+		var layout = [ {
+			name : '选择',
+			field : "checked",
+			width : "30px",
+			editable : true,
+			styles : 'text-align: center;',
+			type : dojox.grid.cells.Bool,
+		}
+		, {
+			name : '最后一次登陆时间',
+			field : 'lastdate',
+			desc:true,
+			column : 'lastdate',
+		}
+		, {
+			name : '创建时间',
+			field : 'createdate',
+			desc:true,
+			column : 'createdate',
+		}
+		, {
+			name : '状态',
+			field : 'status',
+			desc:true,
+			column : 'status',
+		}
+		, {
+			name : '真实用户名',
+			field : 'realname',
+			desc:true,
+			column : 'realname',
+		}
+		, {
+			name : '密码',
+			field : 'password',
+			desc:true,
+			column : 'password',
+		}
+		, {
+			name : '登录用户名',
+			field : 'username',
+			desc:true,
+			column : 'username',
+		}
+		,{
+			name : '修改',
+			field : 'modify',
+			width : "30px",
+			formatter: function(cellValue, rowIndex){
+			    // return needed images for rowIndex of column 'col1'
+			    return '<img src="../../images/xiugai.gif" />';
+			}
+		}
+];
+		tbgrid.setPriv(params.getStr("priv"));
+		tbgrid.loadOnStart(layout,'/WebAdmin/rest/adminoperator','username');
+		changepagesize=tbgrid.changepagesize;
+		
+	});
+	//dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
+
+</script>
+</html>

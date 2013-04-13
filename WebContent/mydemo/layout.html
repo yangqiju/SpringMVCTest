@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../js/dijit/themes/claro/claro.css">
+<style type="text/css">
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+</style>
+<script>
+	dojoConfig = {
+		parseOnLoad : true,
+		async:true,
+		packages:[{
+			name:"mydemo",
+			location: location.pathname.replace(/\/[^/]+$/, "") + "/"
+		}]
+	}
+</script>
+<script src='../js/dojo/dojo.js'></script>
+<script>
+	require([ "dojo/parser", "dijit/layout/BorderContainer",
+			"dijit/layout/TabContainer", "dijit/layout/AccordionContainer",
+			"dijit/layout/ContentPane", "dijit/layout/AccordionPane","mydemo/hello" ],function(hello){
+		new hello();
+		/*	var tree = new myTree();
+		tree.placeAt("tree");
+		tree.startup(); */
+	});
+</script>
+<script>
+	/* require(["mydemo/myTree"],function(myTree){
+		ready(function() {
+		var tree = new MyTree();
+			tree.placeAt("tree");
+			tree.startup();
+		});
+	}); */
+</script>
+</head>
+<body class="claro">
+	<div data-dojo-type="dijit/layout/BorderContainer"
+		style="width: 100%; height: 100%;">
+		<div data-dojo-type="dijit/layout/ContentPane"
+			data-dojo-props="region:'top'">Top pane</div>
+		<div data-dojo-type="dijit/layout/AccordionContainer"
+			data-dojo-props="region:'leading'" style="width: 20%">
+			<div data-dojo-type="dijit/layout/AccordionPane" title="pane #1">
+				<div id="tree"></div>
+			</div>
+			<div data-dojo-type="dijit/layout/AccordionPane" title="pane #2">accordion
+				pane #2</div>
+			<div data-dojo-type="dijit/layout/AccordionPane" title="pane #3">accordion
+				pane #3</div>
+		</div>
+		<div data-dojo-type="dijit/layout/TabContainer"
+			data-dojo-props="region:'center'">
+			<div data-dojo-type="dijit/layout/ContentPane" title="tab #1">tab
+				pane #1</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="tab #2">tab
+				pane #2</div>
+			<div data-dojo-type="dijit/layout/ContentPane" title="tab #3">tab
+				pane #3</div>
+		</div>
+		<!-- 
+		<div data-dojo-type="dijit/layout/ContentPane"
+			data-dojo-props="region:'bottom'">Bottom pane</div>
+		<div data-dojo-type="dijit/layout/ContentPane"
+			data-dojo-props="region:'trailing'">Trailing pane</div>
+			 -->
+	</div>
+</body>
+</html>

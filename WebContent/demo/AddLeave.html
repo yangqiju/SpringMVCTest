@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Demo: Using _TemplatedMixin</title>
+		<link rel="stylesheet" href="js/dijit/themes/claro/claro.css" media="screen">
+		
+	</head>
+	<body class="claro">
+		<h1>Demo: Using _TemplatedMixin</h1>
+		<div id="SomeElement">
+		</div>
+		<script>
+			// See the using Custom Modules with a CDN Tutorial for an explination of how
+			// on how 
+			var dojoConfig = {
+				async: true,
+				packages: [{
+					name: "demo",
+					location: location.pathname.replace(/\/[^/]+$/, "") + "/js/demo/"
+				}]
+			};
+		</script>
+		<!-- load dojo and provide config via data attribute -->
+	
+			<script src="js/dojo/dojo.js"></script>
+		<script>
+			require([
+				"dojo/parser",
+				"dijit/form/Button",
+				"demo/AddLeave",
+				"dojo/data/ObjectStore",
+				"dojo/store/Memory"
+			], function(parser,button,AddLeave,ObjectStore,Memory) {
+				// Invoke the dojo/parser
+				var store = new Memory({
+					data:[
+						{id:'1',label:'事假'},
+						{id:'2',label:'病假'},
+						{id:'3',label:'婚假'},
+						{id:'4',label:'产假'},
+						{id:'5',label:'丧假'},
+						{id:'6',label:'倒休'},
+						{id:'7',label:'其他'}
+					]
+				});
+				var os = new ObjectStore({objectStore:store});
+				var AddLeave = new AddLeave({
+					leaveStore:os
+				});
+				AddLeave.placeAt('SomeElement');
+			});
+		</script>
+	</body>
+</html>

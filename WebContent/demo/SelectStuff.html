@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Demo: Using _TemplatedMixin</title>
+		<link rel="stylesheet" href="js/dijit/themes/claro/claro.css" media="screen">
+		
+	</head>
+	<body class="claro">
+		<h1>Demo: Using _TemplatedMixin</h1>
+		<div id="SomeElement">
+		</div>
+		<script>
+			// See the using Custom Modules with a CDN Tutorial for an explination of how
+			// on how 
+			var dojoConfig = {
+				async: true,
+				packages: [{
+					name: "demo",
+					location: location.pathname.replace(/\/[^/]+$/, "") + "/js/demo/"
+				}]
+			};
+		</script>
+		<!-- load dojo and provide config via data attribute -->
+	
+			<script src="js/dojo/dojo.js"></script>
+		<script>
+			require([
+				"dojo/parser",
+				"dijit/form/Button",
+				"demo/SelectStuff",
+				"dojo/data/ObjectStore",
+				"dojo/store/Memory"
+			], function(parser,button,SelectStuff,ObjectStore,Memory) {
+				// Invoke the dojo/parser
+				var store = new Memory({
+					data : [
+						{id:'1', label:'技术部'},
+						{id:'2', label:'财务部'},
+						{id:'3', label:'人事部'},
+						{id:'4', label:'市场部'},
+						{id:'5', label:'客服部'}
+					]
+				});
+				var os = new ObjectStore({
+					objectStore:store
+				});
+				var SelectStuff = new SelectStuff({
+					deptStore:os
+				});
+				SelectStuff.placeAt('SomeElement');
+			});
+		</script>
+	</body>
+</html>

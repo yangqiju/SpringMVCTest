@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html >
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="js/dijit/themes/claro/claro.css" />
+	<link rel="stylesheet" href="js/dojox/widget/Dialog/Dialog.css" />
+	<link rel="stylesheet" href="js/dojo/resources/dojo.css" />
+	<link rel="stylesheet" href="js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
+	<link rel="stylesheet" href="js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css" />
+	<link rel="stylesheet" href="demo/css/demo.css"/>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+	<link rel="stylesheet" href="demo/css/style.css" />
+	<title>考勤管理平台</title>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script src='js/dojo/dojo.js'></script>
+<script type="text/javascript">
+ $(function() {
+	$( "#startTime" ).datepicker();
+	$( "#endTime" ).datepicker();
+	$("#selectStartTime").datepicker();
+	$("#selectEndTime").datepicker();
+});
+</script>
+<script type="text/javascript">
+	require(["dojo/request","dojo/ready","dojox/widget/FisheyeList","dojo/parser","dojox/widget/FisheyeListItem","dojo/_base/fx", "dojo/fx/easing", "dojo/window", "dojo/on", "dojo/dom","dojo/dom-style","dojox/grid/EnhancedGrid","dojo/data/ItemFileWriteStore","dijit/Dialog","dojox/form/FileUploader","dojox/grid/enhanced/plugins/Pagination","dojo/domReady!"],
+
+		function(request,ready, fishEyeList, parser, FishEyeListItem,baseFx, easing, win, on, dom,style,EnhancedGrid,ItemFileWriteStore,Dialog,FileUploader,Pagination){
+		dojo.addOnLoad(function(){
+			parser.parse();
+		});
+		ready(function(){
+			var showGrid = function(data_list) {
+				var data = {
+						identifier: 'id',
+						items: []
+				};
+				if(data_list.length != 0){
+					for(var i=0, l=data_list.length; i<data_list.length; i++){
+						if(data_list[i].comeornot == "0"){
+							data_list[i].comeornot = "否";
+						}else {
+							data_list[i].comeornot = "是";
+						}
+						  data.items.push(dojo.mixin({ id: i+1 }, data_list[i%l]));
+					}
+					var store = new dojo.data.ItemFileWriteStore({data: data});
+					/*set up layout*/
+					var layout = [[
+					  {'name': '员工编号', 'field': 'empid',width: "60px"},
+					  {'name': '员工姓名', 'field': 'empname',width: "60px"},
+					  {'name': '所属部门', 'field': 'departmentname',width: "60px"},
+					  {'name': '上班时间', 'field': 'starttime',width: "60px"},
+					  {'name': '下班时间', 'field': 'endtime',width: "60px"},
+					  {'name': '迟到分钟数', 'field': 'latesec',width: "70px"},
+					  {'name': '早退分钟数', 'field': 'earlyhome',width: "70px"},
+					  {'name': '加班小时数', 'field': 'overworkhours',width: "70px"},
+					  {'name': '是否旷工', 'field': 'comeornot',width: "70px"}
+					]];
+					if(dijit.byId("grid")!= null){
+						dijit.byId("grid").setStore(store);
+					} else{
+						/*create a new grid:*/
+						var grid = new dojox.grid.EnhancedGrid({
+							id:"grid",
+							store: store,
+							structure: layout,
+							rowSelector: '2px',
+							 plugins: {
+						          pagination: {
+						              pageSizes: ["25", "50", "100", "All"],
+						              description: true,
+						              sizeSwitch: true,
+						              pageStepper: true,
+						              gotoButton: true,
+						                      /*page step to be displayed*/
+						              maxPageStep: 4,
+						                      /*position of the pagination bar*/
+						              position: "bottom"
+						          }
+						        }},
+							document.createElement('div'));
+
+						/*append the new grid to the div*/
+						dojo.byId("kqShow").appendChild(grid.domNode);
+						grid.startup();
+					}
+				}
+			}
+			
+			on(dijit.byId("kaoqin"), "click", function(evt){
+				request.get("http://localhost:8080/OA/showKQ/show.do", {
+					    handleAs: "json"
+					 }).then(function(data){
+						 showGrid(data);
+					  }, function(err){
+					    document.write("ERROR");
+					  }, function(evt){
+					    document.write("evt");
+					  });
+				 $("#kqDialog").dialog({
+					width:820, 
+					modal:true,
+					show:'slide',
+					hide:'slide',
+					open: function (event, ui) {
+						 var $dialog = $(this);
+						$(".ui-dialog-titlebar-close").replaceWith("<p class='ui-xlgwr'><span class='ui-icon ui-icon-minusthick'>minusthick</span>"
+						+"<span class='ui-icon ui-icon-extlink'>extlink</span>"+"<span class='ui-icon ui-icon-closethick'>close</span></p>");
+						$(".ui-xlgwr>span").click(function () {
+							 var spantext = $(this).text();
+								  if (spantext == "extlink") {
+									if (window.screen) {              //判断浏览器是否支持window.screen判断浏览器是否支持screen
+										var myw = screen.availWidth;   //定义一个myw，接受到当前全屏的宽
+										var myh = screen.availHeight;  //定义一个myw，接受到当前全屏的高
+										//window.moveTo(0, 0);           //把window放在左上脚
+										//window.resizeTo(myw, myh);     //把当前窗体的长宽跳转为myw和myh
+										$dialog.dialog({
+											position: ["left", "top"],
+											width: myw * 0.8,
+											height: myh * 0.8
+										});
+									} else {
+										$dialog.dialog({
+											position: "center",
+											width: 800,
+											height: 600
+										});
+									}
+								} else if (spantext == "minusthick") {
+									$dialog.dialog({
+										position: "top",
+										width: 210,
+										height: 210
+									});
+								} else if (spantext == "close") {
+									$dialog.dialog("close");
+								} else {
+									alert("请选择正确的图标,谢谢.");
+								}
+								
+							});
+						},
+						close:function(evt){alert("Byebye");}
+				});
+			});
+
+			on(dijit.byId("leave"), "click", function(evt){
+				$( "#qjDialog" ).dialog({
+					show:'explode',
+					hide:'explode',
+					open: function (event, ui) {
+						 var $dialog = $(this);
+						$(".ui-dialog-titlebar-close").replaceWith("<p class='ui-xlgwr'><span class='ui-icon ui-icon-minusthick'>minusthick</span>"
+						+"<span class='ui-icon ui-icon-extlink'>extlink</span>"+"<span class='ui-icon ui-icon-closethick'>close</span></p>");
+						$(".ui-xlgwr>span").click(function () {
+							 var spantext = $(this).text();
+								  if (spantext == "extlink") {
+									if (window.screen) {              //判断浏览器是否支持window.screen判断浏览器是否支持screen
+										var myw = screen.availWidth;   //定义一个myw，接受到当前全屏的宽
+										var myh = screen.availHeight;  //定义一个myw，接受到当前全屏的高
+										//window.moveTo(0, 0);           //把window放在左上脚
+										//window.resizeTo(myw, myh);     //把当前窗体的长宽跳转为myw和myh
+										$dialog.dialog({
+											position: ["left", "top"],
+											width: myw * 0.8,
+											height: myh * 0.8
+										});
+									} else {
+										$dialog.dialog({
+											position: "center",
+											width: 800,
+											height: 600
+										});
+									}
+								} else if (spantext == "minusthick") {
+									$dialog.dialog({
+										position: "top",
+										width: 210,
+										height: 210
+									});
+								} else if (spantext == "close") {
+									$dialog.dialog("close");
+								} else {
+									alert("请选择正确的图标,谢谢.");
+								}
+								
+							});
+						}
+				});
+			/*
+				dom.byId("gridDiv1").style.display="";
+				  var viewport = win.getBox(win.doc);
+				
+					baseFx.animateProperty({
+				        easing: easing.bounceOut,
+				        duration: 600,
+						node: dom.byId("gridDiv1"),
+						properties: {
+							 left:{start:0, end:640}
+						}
+					}).play();
+					*/
+			});
+
+			on(dijit.byId("dataInput"), "click", function(evt){
+				$( "#kqhzDialog" ).dialog({
+					width:500,
+					show:'clip',
+					hide:'clip',
+					open: function (event, ui) {
+						 var $dialog = $(this);
+						$(".ui-dialog-titlebar-close").replaceWith("<p class='ui-xlgwr'><span class='ui-icon ui-icon-minusthick'>minusthick</span>"
+						+"<span class='ui-icon ui-icon-extlink'>extlink</span>"+"<span class='ui-icon ui-icon-closethick'>close</span></p>");
+						$(".ui-xlgwr>span").click(function () {
+							 var spantext = $(this).text();
+								  if (spantext == "extlink") {
+									if (window.screen) {              //判断浏览器是否支持window.screen判断浏览器是否支持screen
+										var myw = screen.availWidth;   //定义一个myw，接受到当前全屏的宽
+										var myh = screen.availHeight;  //定义一个myw，接受到当前全屏的高
+										//window.moveTo(0, 0);           //把window放在左上脚
+										//window.resizeTo(myw, myh);     //把当前窗体的长宽跳转为myw和myh
+										$dialog.dialog({
+											position: ["left", "top"],
+											width: myw * 0.8,
+											height: myh * 0.8
+										});
+									} else {
+										$dialog.dialog({
+											position: "center",
+											width: 800,
+											height: 600
+										});
+									}
+								} else if (spantext == "minusthick") {
+									$dialog.dialog({
+										position: "top",
+										width: 210,
+										height: 210
+									});
+								} else if (spantext == "close") {
+									$dialog.dialog("close");
+								} else {
+									alert("请选择正确的图标,谢谢.");
+								}
+								
+							});
+						}
+				});
+			});
+			on(dijit.byId("rolemanage"), "click", function(evt){
+				$("#roleManage").dialog({
+					width:500,
+					show:'size',
+					hide:'size',
+					open: function (event, ui) {
+						 var $dialog = $(this);
+						$(".ui-dialog-titlebar-close").replaceWith("<p class='ui-xlgwr'><span class='ui-icon ui-icon-minusthick'>minusthick</span>"
+						+"<span class='ui-icon ui-icon-extlink'>extlink</span>"+"<span class='ui-icon ui-icon-closethick'>close</span></p>");
+						$(".ui-xlgwr>span").click(function () {
+							 var spantext = $(this).text();
+								  if (spantext == "extlink") {
+									if (window.screen) {              //判断浏览器是否支持window.screen判断浏览器是否支持screen
+										var myw = screen.availWidth;   //定义一个myw，接受到当前全屏的宽
+										var myh = screen.availHeight;  //定义一个myw，接受到当前全屏的高
+										//window.moveTo(0, 0);           //把window放在左上脚
+										//window.resizeTo(myw, myh);     //把当前窗体的长宽跳转为myw和myh
+										$dialog.dialog({
+											position: ["left", "top"],
+											width: myw * 0.8,
+											height: myh * 0.8
+										});
+									} else {
+										$dialog.dialog({
+											position: "center",
+											width: 800,
+											height: 600
+										});
+									}
+								} else if (spantext == "minusthick") {
+									$dialog.dialog({
+										position: "top",
+										width: 210,
+										height: 210
+									});
+								} else if (spantext == "close") {
+									$dialog.dialog("close");
+								} else {
+									alert("请选择正确的图标,谢谢.");
+								}
+								
+							});
+						}
+				});
+			});
+
+			on(dijit.byId("departStuffManage"), "click", function(evt){
+				$("#departManage").dialog({
+					width:500,
+					show:'bounce',
+					hide:'bounce',
+					open: function (event, ui) {
+						 var $dialog = $(this);
+						$(".ui-dialog-titlebar-close").replaceWith("<p class='ui-xlgwr'><span class='ui-icon ui-icon-minusthick'>minusthick</span>"
+						+"<span class='ui-icon ui-icon-extlink'>extlink</span>"+"<span class='ui-icon ui-icon-closethick'>close</span></p>");
+						$(".ui-xlgwr>span").click(function () {
+							 var spantext = $(this).text();
+								  if (spantext == "extlink") {
+									if (window.screen) {              //判断浏览器是否支持window.screen判断浏览器是否支持screen
+										var myw = screen.availWidth;   //定义一个myw，接受到当前全屏的宽
+										var myh = screen.availHeight;  //定义一个myw，接受到当前全屏的高
+										//window.moveTo(0, 0);           //把window放在左上脚
+										//window.resizeTo(myw, myh);     //把当前窗体的长宽跳转为myw和myh
+										$dialog.dialog({
+											position: ["left", "top"],
+											width: myw * 0.8,
+											height: myh * 0.8
+										});
+									} else {
+										$dialog.dialog({
+											position: "center",
+											width: 800,
+											height: 600
+										});
+									}
+								} else if (spantext == "minusthick") {
+									$dialog.dialog({
+										position: "top",
+										width: 210,
+										height: 210
+									});
+								} else if (spantext == "close") {
+									$dialog.dialog("close");
+								} else {
+									alert("请选择正确的图标,谢谢.");
+								}
+								
+							});
+						}
+				});
+			});
+	});
+		
+	});
+</script>
+</head>
+<body class="claro">
+<div id="header">
+	<div class="header_left">当前登录：${username}，年假：${}天，加班：${}小时</div>
+	<div class="header_center">
+		<div data-dojo-type="dojox/widget/FisheyeList"
+			itemWidth="50" itemHeight="50"
+			itemMaxWidth="100" itemMaxHeight="100"
+			orientation="horizontal"
+			effectUnits="0.5"
+			itemPadding="5"
+			attachEdge="top"
+			labelEdge="bottom"
+			id="fisheye1"
+		>
+			<div id="kaoqin" data-dojo-type="dojox/widget/FisheyeListItem" label="我的考勤" iconSrc="images/icon_browser.png"></div>
+			<div id="leave" data-dojo-type="dojox/widget/FisheyeListItem" label="请假管理" iconSrc="images/icon_texteditor.png"></div>
+			<div id="dataInput" data-dojo-type="dojox/widget/FisheyeListItem" label="考勤汇总" iconSrc="images/mfu.png"></div>
+			<div id="rolemanage" data-dojo-type="dojox/widget/FisheyeListItem" label="权限角色管理" onclick="" iconSrc="images/icon_email.png"></div>
+			<div id="departStuffManage" data-dojo-type="dojox/widget/FisheyeListItem" label="部门人员管理" iconSrc="images/icon_peoplemanager.jpg"></div>
+		</div>
+	</div>
+</div>
+</div>
+<div id="space" style="width:100%;height:35em"></div>
+<hr/>
+<div id="fotter">
+<div class=feature id=my-glider>
+  <div class=scroller>
+    <div class=content>
+      <div class=section id=section1> hello1 </div>
+      <div class=section id=section2> hello2 </div>
+      <div class=section id=section3> hello3 </div>
+      <div class=section id=section4> hello4 </div>
+    </div>
+	 <a id=prevLink onClick="my_glider.previous();return false;">Previous</a>&nbsp; 
+	 <a id=nextLink onClick="my_glider.next();return false" >Next</a>
+  </div>
+  <div id="kqDialog" title="考勤信息查询结果">
+  <table>
+ 	 <tr>
+ 	 	<td><input type="text" style="display:none;"/>起始日期<input type="text" id="selectStartTime" /></td>
+ 	 	<td>结束日期<input type="text" id="selectEndTime" /></td>
+  		<td><button>查询</button></td>
+  </tr></table>
+  <div id="kqShow"></div>
+  </div>
+  <div id="qjDialog" class="box" title="请假管理界面" style="display:none">
+  <form action="#" method="post">
+  <table align="center" border="1px dotted red">
+				<tr>
+					<td>
+						<label for="firstname">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+					</td>
+					<td>
+						<input type="text" name="firstname" value="testing testing" data-dojo-type="dijit/form/TextBox" data-dojo-props="trim:true, propercase:true" id="firstname" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="leaveType">请假类型:</label>
+					</td>
+					<td>
+					
+						<select name="leaveType" data-dojo-type="dijit/form/Select">
+							<option value="TN">病假</option>
+							<option value="VA" selected="selected">事假</option>
+							<option value="WA">产假</option>
+							<option value="FL">年假</option>
+							<option value="CA">倒休</option>
+						</select>
+						
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label for="startTime">开始时间:</label>
+					</td>
+					<td>
+						<input type="text" id="startTime" /></p>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label for="leaveEndTime">结束时间:</label>
+					</td>
+					<td>
+						<input type="text" id="endTime" /></p>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<button id="submit" data-dojo-type="dijit/form/Button" type="submit" name="submit">确认</button>
+					</td>
+					<td>
+						<button id="cancel" data-dojo-type="dijit/form/Button" type="reset" name="submit">取消</button>
+					</td>
+				</tr>
+			</table>
+  </div>
+  </form>
+<div id="kqhzDialog" title="考勤信息汇总" style="display:none">
+ <form action="#" method="post">
+ <div align="center">
+ <form action="/import.do" enctype="multipart/form-data" method="post">
+ <input type="file" label="选择文件"/><input type="submit" value="上传"></div>
+ </form>
+			<table align="center" border="1px dotted red">
+			<th><td>姓名</td><td>请假天数</td><td>缺勤天数</td><td>实际考勤天数</td></th>
+				<tr>
+					<td>1</td>
+					<td>
+						XXX
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+				</tr>
+			<tr><td>1</td>
+					<td>
+						XXX
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+				</tr><tr><td>1</td>
+					<td>
+						XXX
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+				</tr><tr><td>1</td>
+					<td>
+						XXX
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+					<td>
+						1
+					</td>
+				</tr>
+			</table>
+			</form>
+</div>
+
+<div id="roleManage" title="权限角色管理" style="display:none">
+		<table align="center" border="1px dotted #000000" style="text-align:center;">
+			<th><td>超级管理员组</td><td>管理员</td><td>普通级别</td></th>
+			<tr>
+			<td>权限角色管理</td>
+				<td>
+					<ul data-dojo-type="dojo/dnd/Source">  
+					<li class="dojoDndItem">Item 1</li>  
+					<li class="dojoDndItem">Item 2</li>  
+					<li class="dojoDndItem">Item 3</li>  
+					<li class="dojoDndItem">Item 4</li>  
+					<li class="dojoDndItem">Item 5</li>  
+					</ul>
+				</td>
+				<td>
+					<ul data-dojo-type="dojo/dnd/Source">  
+						<li class="dojoDndItem">Item 1</li>  
+						<li class="dojoDndItem">Item 2</li> 
+					</ul>  
+				
+				</td>
+				<td>
+					<ul data-dojo-type="dojo/dnd/Source">  
+						<li class="dojoDndItem">Item A</li>  
+						<li class="dojoDndItem">Item B</li>  
+						<li class="dojoDndItem">Item C</li>  
+						<li class="dojoDndItem">Item D</li>  
+						<li class="dojoDndItem">Item E</li>  
+					</ul>
+				</td>
+				</tr>
+			</table>
+
+</div>
+<div id="departManage" title="部门人员管理" style="display:none">
+
+<table align="center" border="1px dotted" style="text-align:center;">
+			<th><td>技术部</td><td>人事部</td><td>财务部</td></th>
+			<tr>
+			<td>部门人员管理</td>
+				<td>
+					<ul data-dojo-type="dojo/dnd/Source">  
+					<li class="dojoDndItem">Item 1</li>  
+					<li class="dojoDndItem">Item 2</li>  
+					<li class="dojoDndItem">Item 3</li>  
+					<li class="dojoDndItem">Item 4</li>  
+					<li class="dojoDndItem">Item 5</li>  
+					</ul>
+				</td>
+				<td>
+					<ul data-dojo-type="dojo/dnd/Source">  
+						<li class="dojoDndItem">Item 1</li>  
+						<li class="dojoDndItem">Item 2</li> 
+					</ul>
+				</td>
+				<td>
+					<ul data-dojo-type="dojo/dnd/Source">  
+						<li class="dojoDndItem">Item A</li>  
+						<li class="dojoDndItem">Item B</li>  
+						<li class="dojoDndItem">Item C</li>  
+						<li class="dojoDndItem">Item D</li>  
+						<li class="dojoDndItem">Item E</li>  
+					</ul>
+				</td>
+				</tr>
+			</table>
+</div>
+</body>
+</html>
+
+
+  <!--<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true" id="borderContainer">
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:false, region:'leading'" style="width: 180px;">
+    	<table>
+			<tr><td>当前登录：</td><td>${username}</td></tr>
+			<tr><td>剩余年假：</td><td>${annualLeave}(天)</td></tr>
+			<tr><td>加班：</td><td>${overWork}(小时)</td></tr>
+			<tr colspan="2"><td><a href="index.jsp">注销</a><td></tr>
+		</table>
+    </div>
+    
+    <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center', tabStrip:true" id="mainShowContainer">
+		<div data-dojo-type="dijit/layout/ContentPane" title="欢迎页" data-dojo-props="selected:true, closable:true" id="Welcome">
+		</div>
+	</div>
+</div>-->
